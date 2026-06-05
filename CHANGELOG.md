@@ -17,6 +17,10 @@
 - Edit モードでの動作プレビューは VRChat SDK の Constraint Preview 設定に依存するようになる (Project Settings → VRChat SDK → Constraints)
 
 ### Fixed
+- `ConstraintApplier.Apply` で `Locked = true` を設定していたため、VRChat SDK の Performance Stats 計算 (`AvatarPerformanceStats.CalculatePerformanceRating`) で NRE が発生してアップロード不可になるバグを修正。`Locked = false` に変更
+- `ConstraintApplier.Apply` で `RotationAtRest` を設定していたが `IsActive = true` 時には参照されないため削除 (NRE の原因候補を排除)
+- `ConstraintApplier.Apply` 時に既存の Unity 標準 `RotationConstraint` を自動削除するように変更。Phase 0.5 → Phase 1 移行時の二重 Constraint を解消
+- `ConstraintApplier.Remove` で VRC Constraint だけでなく Unity 標準 `RotationConstraint` も削除するように変更
 - `BoneMapper` で Attach 後の解析時に、サブ側 `FindParentAnimator` がベース側 Animator を拾い Tier 1 マッピングが破綻するバグを修正。サブ Animator がベース Animator と同一の場合は Tier 1 (Humanoid 直接) をスキップし、Tier 1.5 (名前正規化) フォールバックに切り替え
 
 ### Changed

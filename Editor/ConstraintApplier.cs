@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Animations;
 using VRC.Dynamics;
 using VRC.SDK3.Dynamics.Constraint.Components;
 
@@ -24,6 +25,13 @@ namespace LimbRigger
                 if (m.subLimbBone == null || m.baseBone == null) continue;
 
                 var go = m.subLimbBone.gameObject;
+
+                var legacy = go.GetComponent<RotationConstraint>();
+                if (legacy != null)
+                {
+                    Undo.DestroyObjectImmediate(legacy);
+                }
+
                 var existing = go.GetComponent<VRCRotationConstraint>();
                 VRCRotationConstraint rc = existing != null
                     ? existing
@@ -42,12 +50,11 @@ namespace LimbRigger
                 rc.AffectsRotationX = true;
                 rc.AffectsRotationY = true;
                 rc.AffectsRotationZ = true;
-                rc.RotationAtRest = m.subLimbBone.localEulerAngles;
                 rc.RotationOffset = Vector3.zero;
                 rc.GlobalWeight = 1f;
                 rc.SolveInLocalSpace = false;
                 rc.IsActive = true;
-                rc.Locked = true;
+                rc.Locked = false;
 
                 applied++;
             }
@@ -64,8 +71,15 @@ namespace LimbRigger
             int group = Undo.GetCurrentGroup();
             int removed = 0;
 
-            var constraints = subLimbRoot.GetComponentsInChildren<VRCRotationConstraint>(true);
-            foreach (var rc in constraints)
+            var vrcConstraints = subLimbRoot.GetComponentsInChildren<VRCRotationConstraint>(true);
+            foreach (var rc in vrcConstraints)
+            {
+                Undo.DestroyObjectImmediate(rc);
+                removed++;
+            }
+
+            var unityConstraints = subLimbRoot.GetComponentsInChildren<RotationConstraint>(true);
+            foreach (var rc in unityConstraints)
             {
                 Undo.DestroyObjectImmediate(rc);
                 removed++;
