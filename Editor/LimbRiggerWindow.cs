@@ -33,7 +33,10 @@ namespace LimbRigger
                 avatarRoot, typeof(GameObject), true);
 
             attachmentPoint = (Transform)EditorGUILayout.ObjectField(
-                new GUIContent("Attachment Point", "サブパーツを取り付ける本体側の親ボーン (例: Chest / Hips)"),
+                new GUIContent("Attachment Point",
+                    "サブパーツの「生え際」が追従する本体側のボーン。\n" +
+                    "推奨: サブアーム→Chest、サブレッグ→Hips、義手→LeftLowerArm、義足→LeftLowerLeg、頭飾り→Head、手持ち物→LeftHand/RightHand。\n" +
+                    "Avatar Root や Armature のような上位 GameObject を指定すると、体の動きに追従しない不自然な挙動になります。"),
                 attachmentPoint, typeof(Transform), true);
 
             subLimbSubtreeRoot = (Transform)EditorGUILayout.ObjectField(
@@ -51,6 +54,7 @@ namespace LimbRigger
             }
 
             ShowAvatarRootDiagnostics();
+            ShowAttachmentPointDiagnostics();
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Step 1: Attach", EditorStyles.boldLabel);
@@ -165,6 +169,48 @@ namespace LimbRigger
                     "Avatar Root の Animator が Humanoid ではありません。Rig タブを Humanoid に設定したアバターを使用してください。Tier 1 (Humanoid) と Tier 1.5 (Base Humanoid + Sub 名前マッチ) の自動マッピングが機能しません。",
                     MessageType.Warning);
             }
+        }
+
+        void ShowAttachmentPointDiagnostics()
+        {
+            if (attachmentPoint == null || avatarRoot == null) return;
+
+            if (attachmentPoint == avatarRoot.transform)
+            {
+                EditorGUILayout.HelpBox(
+                    "Attachment Point に Avatar Root が指定されています。" +
+                    "この場合サブパーツがアバター全体の移動にしか追従せず、前傾やしゃがみで体の動きから取り残されます。" +
+                    "サブアームなら Chest、サブレッグなら Hips、義手なら LeftLowerArm 等の体の部位ボーンを指定してください。",
+                    MessageType.Warning);
+                return;
+            }
+
+            var anim = avatarRoot.GetComponent<Animator>();
+            if (anim == null || !anim.isHuman) return;
+
+            var hips = anim.GetBoneTransform(HumanBodyBones.Hips);
+            if (hips == null) return;
+
+            if (attachmentPoint != hips && IsAncestorOf(attachmentPoint, hips))
+            {
+                EditorGUILayout.HelpBox(
+                    "Attachment Point が Humanoid の Hips より上の階層 (Armature 等) に指定されています。" +
+                    "サブパーツが体の動きに追従しない可能性があります。" +
+                    "サブアームなら Chest、サブレッグなら Hips を推奨。",
+                    MessageType.Warning);
+            }
+        }
+
+        static bool IsAncestorOf(Transform potentialAncestor, Transform child)
+        {
+            if (potentialAncestor == null || child == null) return false;
+            var cur = child.parent;
+            while (cur != null)
+            {
+                if (cur == potentialAncestor) return true;
+                cur = cur.parent;
+            }
+            return false;
         }
 
         static Color TierColor(MappingTier t)

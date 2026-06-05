@@ -8,6 +8,12 @@
 
 ---
 
+## [0.2.1] - 2026-06-06
+
+### Added
+- Attachment Point の選択ガイダンスをツールチップに記載 (サブアーム→Chest、サブレッグ→Hips、義手→LeftLowerArm 等の推奨)
+- Attachment Point に Avatar Root や Humanoid Hips より上の階層 (Armature 等) を指定した場合に HelpBox で警告
+
 ## [0.2.0] - 2026-06-06
 
 初回リリース可能版。

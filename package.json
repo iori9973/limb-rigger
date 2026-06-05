@@ -1,6 +1,6 @@
 {
   "name": "com.limb-rigger",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "displayName": "Limb Rigger",
   "description": "VRChat アバターにサブアームや義手・義足などの追加パーツを取り付け、本体のボーンに RotationConstraint で追従させるセットアップを自動化する Unity Editor 拡張です。",
   "unity": "2022.3",
