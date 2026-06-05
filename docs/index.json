@@ -1,0 +1,10 @@
+{
+  "name": "Limb Rigger Packages",
+  "author": "iori9973",
+  "url": "https://iori9973.github.io/limb-rigger/index.json",
+  "packages": {
+    "com.limb-rigger": {
+      "versions": {}
+    }
+  }
+}

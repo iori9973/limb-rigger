@@ -20,7 +20,7 @@ sysinfo.txt
 .vs/
 .idea/
 *.csproj
-!Tests/*.csproj
+!Tests~/*.csproj
 *.unityproj
 *.sln
 *.suo
@@ -34,9 +34,11 @@ sysinfo.txt
 *.opendb
 *.VC.db
 
-# Tests build output
+# Tests build output (Tests~/ is the dotnet test project, Tests/ is legacy)
 Tests/bin/
 Tests/obj/
+Tests~/bin/
+Tests~/obj/
 
 # OS
 .DS_Store
