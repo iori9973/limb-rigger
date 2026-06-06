@@ -8,6 +8,11 @@
 
 ---
 
+## [0.2.2] - 2026-06-06
+
+### Added
+- Apply ボタンの直後に Modular Avatar 案内 HelpBox を追加。本体側元部位の非表示やサブパーツの On/Off 切替は MA Object Toggle / MA Mesh Settings 等で行ってもらうように責務分離を明示
+
 ## [0.2.1] - 2026-06-06
 
 ### Added

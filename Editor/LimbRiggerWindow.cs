@@ -140,6 +140,12 @@ namespace LimbRigger
                 }
             }
 
+            EditorGUILayout.HelpBox(
+                "本体側の対応部位 (元の腕など) の非表示や、サブパーツのオン/オフ切替は " +
+                "Modular Avatar の MA Object Toggle / MA Mesh Settings 等で行ってください。" +
+                "Limb Rigger は Constraint 生成までを責務とし、メッシュ可視性は制御しません。",
+                MessageType.Info);
+
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Rollback", EditorStyles.boldLabel);
             using (new EditorGUI.DisabledScope(subLimbSubtreeRoot == null))
