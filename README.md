@@ -1,118 +1,167 @@
 # Limb Rigger
 
-VRChat アバターにサブアーム・サブレッグ・義手・義足などの追加パーツを取り付け、本体のボーンに `VRCRotationConstraint` で追従させるセットアップを自動化する Unity Editor 拡張です。
+VRChat アバターに **追加の腕や脚** (サブアーム・義手・義足・頭部置換など) を取り付ける Unity Editor 拡張です。
+
+サブパーツのボーンを本体アバターのボーンに自動マッピングし、`VRCRotationConstraint` を一括設定することで、追加パーツが本体の動きに自然に追従するセットアップを **3 ボタンで完了** できます。
+
+## できること
+
+- カイリキーのような **4 本腕化** (サブアーム)
+- 片腕を別の腕に置き換える **義手化**
+- **サブレッグ / 義足** の取り付け
+- 別アバターの一部 (頭・腕など) を **流用**
+- 手持ち武器・杖などの装備品の追従
 
 ## 動作環境
 
-- Unity 2022.3.22f1
-- VRChat SDK (com.vrchat.avatars) 3.7.0 以上
-- Windows / macOS / Linux
+- Unity 2022.3
+- VRChat SDK (`com.vrchat.avatars`) 3.7.0 以上
+
+---
 
 ## インストール
 
-### VCC（VRChat Creator Companion）からインストール（推奨）
+### 1. VCC にリポジトリを追加
 
-以下のページを開き、**Add to VCC** ボタンをクリックしてください。
+[**▶ Add to VCC**](https://iori9973.github.io/limb-rigger/) からワンクリック追加できます。
 
-https://iori9973.github.io/limb-rigger/
-
-ボタンが動作しない場合は、VCC の **Settings → Packages → Add Repository** に以下の URL を直接貼り付けてください。
+ボタンが反応しない場合は、VCC の **Settings → Packages → Add Repository** に以下の URL を貼り付けてください。
 
 ```
 https://iori9973.github.io/limb-rigger/index.json
 ```
 
-追加後は **My Projects → Manage Project → Limb Rigger → Install** でインストールできます。
+### 2. プロジェクトに追加
 
-### Package Manager からインストール
+VCC で対象プロジェクトを開き、**Manage Project → Packages → Limb Rigger → Install** をクリック。
 
-1. Unity の Package Manager を開く
-2. **Add package from disk...** を選択
-3. `limb-rigger/package.json` を選択
+Unity でプロジェクトを開くと、メニューに `Tools → Limb Rigger` が追加されます。
 
 ---
 
-## 使い方
+## クイックスタート — サブアーム化を 5 分で
 
-メニューから **Tools → Limb Rigger** を開きます。雪空からす氏が紹介していた「RotationConstraint によるサブアーム実装手順」を 1 ウィンドウ + 3 ボタンに自動化したツールです。
+最初のユースケースとして **「本体アバターにサブアームを 2 本追加して 4 本腕にする」** 流れを通して説明します。
 
-### 基本フロー (4 ステップ)
+### Step 1: シーンに配置する
 
-1. **シーンに本体アバターとサブパーツを配置**
-   - サブパーツの位置・スケールを Scene View で目視合わせ (アーマチュア接続前に必須)
-2. **Limb Rigger ウィンドウでフィールド入力**
-   - `Avatar Root`: 本体アバター (Humanoid Animator がある GameObject)
-   - `Attachment Point`: 取り付け先の本体ボーン (例: `Chest` `Hips`)
-   - `Sub Limb Root`: 取り付けるサブパーツのルート Transform
-   - (フルアバターから一部だけ流用する場合のみ) Advanced > `Wrapper Root` にサブパーツ全体の prefab ルート、`Sub Limb Root` には取り出したいサブツリーのルートを指定
-3. **「アーマチュア接続」→「マッピング解析」→ プレビュー確認**
-   - 自動マッピング結果は色分けされる: 緑 (Humanoid) / 黄 (NameMatch) / 青 (ManualOverride) / 赤 (Unmapped)
-   - 想定外のマッピングは右側 ObjectField で手動上書き
-4. **「適用」ボタンで VRCRotationConstraint を一括生成**
-   - すべての操作は Ctrl+Z 1 回でロールバック可能
-   - やり直したいときは「生成物を削除」ボタン
+1. 本体アバター (Humanoid) のプレハブをシーンに配置
+2. サブアームのプレハブを**本体の隣**に配置
+3. Scene View でサブアームの**位置・スケール**を本体に合わせて目視で調整
 
-### ユースケース別の推奨指定
+> **重要**: アーマチュア接続前に位置とスケールを合わせてください。接続後に動かすと Constraint の rest pose がズレます。
 
-`Attachment Point` と `Sub Limb Root` はやりたいことで変わります。
+### Step 2: Limb Rigger ウィンドウを開く
+
+メニュー `Tools → Limb Rigger` をクリック。以下を入力します。
+
+| フィールド | 指定するもの |
+|---|---|
+| **Avatar Root** | 本体アバターのルート GameObject |
+| **Attachment Point** | 本体の `Chest` ボーン |
+| **Sub Limb Root** | サブアームのルート (prefab のルート GameObject) |
+
+### Step 3: 3 ボタンを順に押す
+
+```
+①「アーマチュア接続」   サブアームを本体の Chest 配下に移動
+              ↓
+②「マッピング解析」     ボーン対応を自動解析、色分けプレビュー表示
+              ↓
+③ プレビューを確認       (緑=自動マッピング成功、赤=未対応、必要なら手動上書き)
+              ↓
+④「適用」               VRCRotationConstraint を一括生成
+```
+
+各ボタンを押すと **「N 件のボーンを処理しました」というポップアップ** が表示されます。
+
+### Step 4: 確認・完成
+
+- VRChat SDK Control Panel で Build & Test → 実機で本体の腕の動きにサブアームが追従するか確認
+- 問題があれば **Ctrl + Z** で一発巻き戻し、または「生成物を削除」ボタンで一括クリア
+
+---
+
+## ユースケース別の指定例
+
+サブアーム以外の用途では、`Attachment Point` と `Sub Limb Root` を以下のように指定します。
 
 | やりたいこと | Attachment Point | Sub Limb Root |
 |---|---|---|
-| サブアーム化 (例: 4 本腕化) | `Chest` | サブアーム prefab のルート |
-| 片腕の義手化 | `LeftLowerArm` または `RightLowerArm` | 義手 prefab のルート |
+| サブアーム化 (4 本腕) | `Chest` | サブアーム prefab のルート |
+| 片腕の義手化 | `LeftLowerArm` / `RightLowerArm` | 義手 prefab のルート |
 | サブレッグ | `Hips` | サブレッグ prefab のルート |
-| 義足化 | `LeftLowerLeg` または `RightLowerLeg` | 義足 prefab のルート |
+| 義足化 | `LeftLowerLeg` / `RightLowerLeg` | 義足 prefab のルート |
 | 頭部置換 | `Neck` | 頭パーツ prefab のルート |
-| 手持ち武器・杖 | `LeftHand` または `RightHand` | アクセサリ prefab のルート |
-| フルアバターから一部だけ流用 | 部位に応じた本体ボーン (左腕なら `Chest`) | サブアバター内の部位サブツリーのルート (例: Anubis の `Shoulder.L`)。**Advanced > Wrapper Root** にサブアバター全体の prefab ルートを指定 |
+| 手持ち武器・杖 | `LeftHand` / `RightHand` | アクセサリ prefab のルート |
 
-注意: `Avatar Root` や `Armature` のような上位 GameObject を Attachment Point に指定すると、体の動きに追従しない不自然な挙動になります。Limb Rigger ウィンドウ内でも警告 HelpBox が表示されます。
+> **NG な指定**: `Avatar Root` や `Armature` などの上位 GameObject を Attachment Point にすると、サブパーツが体の動きに追従しません。Limb Rigger 内でも警告 HelpBox が表示されます。
 
-### Modular Avatar との連携
+---
 
-Limb Rigger は **Constraint 生成までを責務**としており、以下の作業は範囲外です:
+## 応用: 別アバターの一部だけを流用する
 
-- 本体側の対応部位 (元の腕など) の非表示
-- サブパーツの ON/OFF 切替トグル
-- アバター全体の Hierarchy 管理
+「Anubis の左腕だけを Marycia に取り付ける」のように、別の**フルアバターから一部のサブツリーだけを取り出して**使うこともできます。
 
-これらは [Modular Avatar](https://modular-avatar.nadena.dev/) の以下機能で実現してください:
+このときは Advanced foldout の **Wrapper Root** を併用します。
 
-- **`MA Object Toggle` + `MA Menu Item`**: Expression Menu からサブパーツを ON/OFF
-- **`MA Mesh Settings`**: ビルド時にメッシュの可視性を切替
-- **`MA Merge Animator`** など: Animator 統合
+| フィールド | 指定するもの |
+|---|---|
+| Avatar Root | 本体アバター |
+| Attachment Point | 本体側の取り付け先ボーン (左腕なら `Chest`) |
+| Sub Limb Root | **サブアバター内の部位サブツリーのルート** (例: Anubis の `Shoulder.L`) |
+| Advanced > **Wrapper Root** | **サブアバター全体の prefab ルート** (例: Anubis prefab ルート) |
 
-Limb Rigger の「適用」ボタン押下後にも案内 HelpBox が表示されます。
+接続後、サブアバターの他の部位 (体・頭・脚など) は Wrapper Root 配下にそのまま残るので、不要な部位を後から手動で削除/非表示にできます。
 
-### 自動マッピングの対応範囲
+---
 
-ベースアバターが Humanoid 設定済みであれば、以下の命名パターンを自動で吸収します。
+## 自動マッピングの対応範囲
 
-| 命名規則 | 例 | 対応 |
-|---|---|---|
-| Unity Humanoid 標準 | `LeftUpperArm` / `RightHand` | ✓ |
-| `_ . - 半角空白` 区切り | `Upper_arm.L` `Lower Arm.L` `Hand-R` | ✓ |
-| Blender 重複サフィックス | `Hand.L.001` `Arm.L.002` | ✓ |
-| Mixamo | `mixamorig:LeftHandIndex1` `LeftUpLeg` `Pinky` | ✓ |
-| VRoid Studio | `J_Bip_L_UpperArm` `J_Bip_C_Neck` `J_Sec_*` | ✓ |
-| 3DS Max biped | `Bip01_L_Hand` `Bip001_L_Forearm` | ✓ |
-| 上腕/前腕の同義語 | `UpperArm↔Arm` `ForeArm↔LowerArm` | ✓ |
-| 脚の同義語 | `Thigh↔UpperLeg` `Calf↔Shin↔LowerLeg` | ✓ |
-| 指関節の同義語 | `Proximal/Intermediate/Distal/Metacarpal` 短縮 | ✓ |
-| 日本語ボーン名 | `腕.L` `手.L` | ✗ (Tier 3 手動オーバーライドで対応) |
+ベースアバターが Humanoid 設定済みの場合、以下の命名規則を自動で吸収します (`BoneNameNormalizer`)。
 
-### 動作確認済みの組み合わせ
+| 命名規則 | 例 |
+|---|---|
+| Unity Humanoid 標準 | `LeftUpperArm` / `RightHand` |
+| `_ . - 半角空白` 区切り | `Upper_arm.L` `Lower Arm.L` `Hand-R` |
+| Blender 重複サフィックス | `Hand.L.001` `Arm.L.002` |
+| Mixamo | `mixamorig:LeftHandIndex1` `LeftUpLeg` `Pinky` |
+| VRoid Studio | `J_Bip_L_UpperArm` `J_Bip_C_Neck` `J_Sec_*` |
+| 3DS Max biped | `Bip01_L_Hand` `Bip001_L_Forearm` |
+| 同義語 | `UpperArm↔Arm` `ForeArm↔LowerArm` `Thigh↔UpperLeg` `Calf↔Shin` 等 |
+| 指関節短縮 | `Proximal/Intermediate/Distal/Metacarpal` |
+
+対応外の命名 (日本語ボーン `腕.L` など) は赤 (Unmapped) と表示されるので、右側の ObjectField で手動オーバーライドしてください。
+
+---
+
+## Modular Avatar との連携
+
+Limb Rigger は **Constraint 生成までを責務** としており、以下は範囲外です。これらは [Modular Avatar](https://modular-avatar.nadena.dev/) で実現してください。
+
+| やりたいこと | 使う MA コンポーネント |
+|---|---|
+| 本体側の元部位 (元の腕) を非表示にする | `MA Mesh Settings` または `MA Object Toggle` |
+| サブパーツの ON/OFF を Expression Menu に追加 | `MA Object Toggle` + `MA Menu Item` |
+| Animator やマテリアル統合 | `MA Merge Animator` / `MA Material Setter` 等 |
+
+「適用」ボタン押下後にも、ウィンドウ内に MA への案内 HelpBox が表示されます。
+
+---
+
+## 既知の制限
+
+- ベースアバターは Humanoid 必須 (Generic ベースは Tier 2 名前マッチのみとなり非推奨)
+- Edit モードでの動作プレビューは VRChat SDK の Constraint Preview 設定に依存 (`Project Settings → VRChat SDK → Constraints`)
+- サブアーム/義手の表示 ON/OFF 切替の自動生成 (Modular Avatar 統合) は未実装。次バージョン以降の予定
+
+---
+
+## 動作確認済みの組み合わせ
 
 - ベース: BeroarN `bn0010_Marycia` (Marycia / Humanoid)
-- サブアーム: `Titan.V2 / Titan2arm` (Generic Avatar)
-- 上記の組合せで 28 ボーンが自動マッピング、VRChat 内で `Hand Gesture` 連動の指追従までを確認済み
-
-### 既知の制限
-
-- ベースアバターは Humanoid 必須 (Generic ベースは Tier 2 名前マッチのみで非推奨)
-- 自動マッピングが赤 (Unmapped) のままの場合は Tier 3 手動オーバーライドで対応
-- Edit モードでの動作プレビューは VRChat SDK の Constraint Preview 設定に依存 (Project Settings → VRChat SDK → Constraints)
-- サブアーム/義手の表示オン/オフ切替 (Modular Avatar 統合) は未実装 — 次バージョン以降の予定
+- サブアーム: 如月開発 `Titan.V2 / Titan2arm` (両腕一体サブアーム)
+- 上記の組合せで 28 ボーンが自動マッピングされ、VRChat 内で Hand Gesture 連動の指追従まで確認済み
 
 ---
 
@@ -122,4 +171,4 @@ MIT License
 
 ## サポート
 
-X（Twitter）: https://x.com/iori__9973
+X (Twitter): [@iori__9973](https://x.com/iori__9973)
