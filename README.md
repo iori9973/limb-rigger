@@ -52,6 +52,38 @@ https://iori9973.github.io/limb-rigger/index.json
    - すべての操作は Ctrl+Z 1 回でロールバック可能
    - やり直したいときは「生成物を削除」ボタン
 
+### ユースケース別の推奨指定
+
+`Attachment Point` と `Sub Limb Root` はやりたいことで変わります。
+
+| やりたいこと | Attachment Point | Sub Limb Root |
+|---|---|---|
+| サブアーム化 (例: 4 本腕化) | `Chest` | サブアーム prefab のルート |
+| 片腕の義手化 | `LeftLowerArm` または `RightLowerArm` | 義手 prefab のルート |
+| サブレッグ | `Hips` | サブレッグ prefab のルート |
+| 義足化 | `LeftLowerLeg` または `RightLowerLeg` | 義足 prefab のルート |
+| 頭部置換 | `Neck` | 頭パーツ prefab のルート |
+| 手持ち武器・杖 | `LeftHand` または `RightHand` | アクセサリ prefab のルート |
+| フルアバターから一部だけ流用 | 部位に応じた本体ボーン (左腕なら `Chest`) | サブアバター内の部位サブツリーのルート (例: Anubis の `Shoulder.L`)。**Advanced > Wrapper Root** にサブアバター全体の prefab ルートを指定 |
+
+注意: `Avatar Root` や `Armature` のような上位 GameObject を Attachment Point に指定すると、体の動きに追従しない不自然な挙動になります。Limb Rigger ウィンドウ内でも警告 HelpBox が表示されます。
+
+### Modular Avatar との連携
+
+Limb Rigger は **Constraint 生成までを責務**としており、以下の作業は範囲外です:
+
+- 本体側の対応部位 (元の腕など) の非表示
+- サブパーツの ON/OFF 切替トグル
+- アバター全体の Hierarchy 管理
+
+これらは [Modular Avatar](https://modular-avatar.nadena.dev/) の以下機能で実現してください:
+
+- **`MA Object Toggle` + `MA Menu Item`**: Expression Menu からサブパーツを ON/OFF
+- **`MA Mesh Settings`**: ビルド時にメッシュの可視性を切替
+- **`MA Merge Animator`** など: Animator 統合
+
+Limb Rigger の「適用」ボタン押下後にも案内 HelpBox が表示されます。
+
 ### 自動マッピングの対応範囲
 
 ベースアバターが Humanoid 設定済みであれば、以下の命名パターンを自動で吸収します。

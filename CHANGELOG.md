@@ -8,6 +8,13 @@
 
 ---
 
+## [0.2.4] - 2026-06-06
+
+### Added
+- `docs/index.html` を追加。https://iori9973.github.io/limb-rigger/ にアクセスすると VCC へリポジトリを追加する「Add to VCC」ボタン (`vcc://vpm/addRepo?url=...`) と手動 URL コピーペースト案内を含む landing page が表示される
+- README にユースケース別の推奨指定表 (サブアーム / 義手 / 義足 / 頭部置換 / フルアバター流用ごとの Attachment Point と Sub Limb Root の指定例) を追加
+- README に Modular Avatar との連携セクションを追加 (MA Object Toggle / MA Mesh Settings / MA Merge Animator 等の使い分け案内)
+
 ## [0.2.3] - 2026-06-06
 
 ### Added
