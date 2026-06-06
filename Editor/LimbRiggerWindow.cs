@@ -63,7 +63,16 @@ namespace LimbRigger
                 if (GUILayout.Button("アーマチュア接続"))
                 {
                     var entry = subLimbWrapper != null ? subLimbWrapper : subLimbSubtreeRoot.gameObject;
+                    var subtreeName = subLimbSubtreeRoot.name;
+                    var attachName = attachmentPoint.name;
                     ArmatureAttacher.Attach(entry, avatarRoot, attachmentPoint, subLimbSubtreeRoot);
+                    Debug.Log($"[Limb Rigger] アーマチュア接続: '{subtreeName}' を '{attachName}' 配下に移動しました。");
+                    EditorUtility.DisplayDialog(
+                        "Limb Rigger",
+                        $"アーマチュア接続が完了しました。\n\n" +
+                        $"'{subtreeName}' を '{attachName}' 配下に reparent しました。\n\n" +
+                        $"次は「マッピング解析」に進んでください。",
+                        "OK");
                 }
             }
 
@@ -137,6 +146,12 @@ namespace LimbRigger
                 {
                     int applied = ConstraintApplier.Apply(mappings);
                     Debug.Log($"[Limb Rigger] Applied constraints to {applied} bones.");
+                    EditorUtility.DisplayDialog(
+                        "Limb Rigger",
+                        $"適用が完了しました。\n\n" +
+                        $"{applied} 件のボーンに VRC Rotation Constraint を追加しました。\n\n" +
+                        $"問題があれば Ctrl+Z で取り消し、または「生成物を削除」ボタンで一括クリアできます。",
+                        "OK");
                 }
             }
 
@@ -154,6 +169,11 @@ namespace LimbRigger
                 {
                     int removed = ConstraintApplier.Remove(subLimbSubtreeRoot);
                     Debug.Log($"[Limb Rigger] Removed {removed} constraints.");
+                    EditorUtility.DisplayDialog(
+                        "Limb Rigger",
+                        $"削除が完了しました。\n\n" +
+                        $"{removed} 件の Constraint を削除しました。",
+                        "OK");
                 }
             }
         }
