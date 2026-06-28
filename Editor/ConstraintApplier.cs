@@ -40,10 +40,11 @@ namespace LimbRigger
                 Undo.RecordObject(rc, ApplyLabel);
 
                 // 適用時点のサブボーンの向きを維持するためのオフセットを焼き込む。
-                // ワールド空間で解決するため、source.rotation * Euler(offset) == subBone.rotation
-                // となる offset = Inverse(source.rotation) * subBone.rotation を求める。
-                // これを省略すると subBone が source の絶対回転にスナップし、
-                // チェーン下流（手など）が支点を中心に振れて位置がずれて見える。
+                // VRCRotationConstraint はソースごとの ParentRotationOffset を使わず、
+                // コンストレイント単体の RotationOffset を使う（Unity の RotationConstraint と同様）。
+                // ワールド空間で result = source.rotation * Euler(RotationOffset) == subBone.rotation
+                // となる offset = Inverse(source.rotation) * subBone.rotation を RotationOffset に入れる。
+                // ※v0.2.5 では同じ値を ParentRotationOffset に入れていたが効かずスナップした。
                 Quaternion restOffset = Quaternion.Inverse(m.baseBone.rotation) * go.transform.rotation;
 
                 rc.Sources.Clear();
@@ -51,14 +52,14 @@ namespace LimbRigger
                 {
                     SourceTransform = m.baseBone,
                     Weight = 1f,
-                    ParentRotationOffset = restOffset.eulerAngles,
+                    ParentRotationOffset = Vector3.zero,
                     ParentPositionOffset = Vector3.zero,
                 });
                 rc.AffectsRotationX = true;
                 rc.AffectsRotationY = true;
                 rc.AffectsRotationZ = true;
                 rc.RotationAtRest = go.transform.localRotation.eulerAngles;
-                rc.RotationOffset = Vector3.zero;
+                rc.RotationOffset = restOffset.eulerAngles;
                 rc.GlobalWeight = 1f;
                 rc.SolveInLocalSpace = false;
                 rc.IsActive = true;
