@@ -140,9 +140,29 @@ namespace LimbRigger
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Step 3: Apply", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "2つの方式があります。\n" +
+                "■ マージ方式 (推奨): 各ボーンを本体ボーンの子に移動し、位置・回転ごと追従。" +
+                "適用時の配置をそのまま保持します。義手・義足などの「本体に固定して動かす」用途向け。\n" +
+                "■ Constraint 方式: 回転のみ追従 (位置は制御しません)。本体と義手のボーン長が異なると" +
+                "ずれることがあります。サブパーツの形状を独立して保ちたい特殊用途向け。",
+                MessageType.Info);
             using (new EditorGUI.DisabledScope(mappings.Count == 0))
             {
-                if (GUILayout.Button("適用 (Constraint + Source + Activate)"))
+                if (GUILayout.Button("適用 (マージ方式 / 配置保持・推奨)"))
+                {
+                    int moved = MergeApplier.Apply(mappings);
+                    Debug.Log($"[Limb Rigger] Merged {moved} bones into the base armature.");
+                    EditorUtility.DisplayDialog(
+                        "Limb Rigger",
+                        $"マージ適用が完了しました。\n\n" +
+                        $"{moved} 件のボーンを本体ボーンの子へ再ペアレントしました。\n" +
+                        $"位置・回転ごと本体に追従し、配置は保持されます。\n\n" +
+                        $"取り消しは Ctrl+Z で行えます。",
+                        "OK");
+                }
+
+                if (GUILayout.Button("適用 (Constraint 方式 / 回転のみ)"))
                 {
                     int applied = ConstraintApplier.Apply(mappings);
                     Debug.Log($"[Limb Rigger] Applied constraints to {applied} bones.");
