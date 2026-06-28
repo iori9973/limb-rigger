@@ -39,17 +39,25 @@ namespace LimbRigger
 
                 Undo.RecordObject(rc, ApplyLabel);
 
+                // 適用時点のサブボーンの向きを維持するためのオフセットを焼き込む。
+                // ワールド空間で解決するため、source.rotation * Euler(offset) == subBone.rotation
+                // となる offset = Inverse(source.rotation) * subBone.rotation を求める。
+                // これを省略すると subBone が source の絶対回転にスナップし、
+                // チェーン下流（手など）が支点を中心に振れて位置がずれて見える。
+                Quaternion restOffset = Quaternion.Inverse(m.baseBone.rotation) * go.transform.rotation;
+
                 rc.Sources.Clear();
                 rc.Sources.Add(new VRCConstraintSource
                 {
                     SourceTransform = m.baseBone,
                     Weight = 1f,
-                    ParentRotationOffset = Vector3.zero,
+                    ParentRotationOffset = restOffset.eulerAngles,
                     ParentPositionOffset = Vector3.zero,
                 });
                 rc.AffectsRotationX = true;
                 rc.AffectsRotationY = true;
                 rc.AffectsRotationZ = true;
+                rc.RotationAtRest = go.transform.localRotation.eulerAngles;
                 rc.RotationOffset = Vector3.zero;
                 rc.GlobalWeight = 1f;
                 rc.SolveInLocalSpace = false;
