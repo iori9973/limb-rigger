@@ -5,6 +5,25 @@
   "packages": {
     "com.limb-rigger": {
       "versions": {
+        "0.3.1": {
+          "name": "com.limb-rigger",
+          "version": "0.3.1",
+          "displayName": "Limb Rigger",
+          "description": "VRChat アバターにサブアームや義手・義足などの追加パーツを取り付け、本体のボーンに RotationConstraint で追従させるセットアップを自動化する Unity Editor 拡張です。",
+          "unity": "2022.3",
+          "type": "tool",
+          "author": {
+            "name": "iori9973",
+            "url": "https://github.com/iori9973"
+          },
+          "url": "https://github.com/iori9973/limb-rigger/releases/download/v0.3.1/limb-rigger-0.3.1.zip",
+          "changelogUrl": "https://github.com/iori9973/limb-rigger/blob/main/CHANGELOG.md",
+          "dependencies": {},
+          "vpmDependencies": {
+            "com.vrchat.avatars": ">=3.7.0"
+          },
+          "zipSHA256": "219c36fcf20ed105ef2c196c44f2ae5e10c07a83b92171e744f805cf64df5a00"
+        },
         "0.3.0": {
           "name": "com.limb-rigger",
           "version": "0.3.0",
